@@ -11,6 +11,36 @@ To run, the host needs to have the following:
 
 These directories will need to be bind-mounted into the container.
 
+## Setting up Docker
+```
+$ sudo apt-get install apt-transport https ca-certificates curl software-properties-common
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+$ sudo apt-get update
+$ sudo apt-get install docker-ce
+```
+Ensuring you have Docker running fine, run:
+```
+$ apt-cache policy docker-ce
+$ sudo systemctl status docker
+```
+To add yourself to the docker group so you won't have to sudo all the time:
+```
+$ sudo usermod -aG docker USERNAME_HERE
+$ su USERNAME_HERE
+$ id -nG // <- to check
+```
+Now with Docker installation out of the way, onto grid-security
+## Setting up the grid-security directory
+Make it and set permissions
+```
+$ sudo mkdir /etc/grid-security
+$ sudo chmod 0755 /etc/grid-security
+$ sudo mkdir /etc/grid-security/certificates
+$ curl 'https://repo.opensciencegrid.org/osg/3.4/el7/release/x86_64/osg-ca-certs-1.74-1.osg34.el7.noarch.rpm' | rpm2cpio | cpio -uimd
+```
+-- TEMP TIMEWARP--
+
 To use, start a docker container with the following command:
 
 ```
