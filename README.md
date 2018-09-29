@@ -15,7 +15,7 @@ These directories will need to be bind-mounted into the container.
 ```
 $ sudo apt-get install apt-transport https ca-certificates curl software-properties-common
 $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable"
+$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable" // <- currently testing on Ubuntu
 $ sudo apt-get update
 $ sudo apt-get install docker-ce
 ```
@@ -40,7 +40,53 @@ $ sudo mkdir /etc/grid-security/certificates
 $ curl 'https://repo.opensciencegrid.org/osg/3.4/el7/release/x86_64/osg-ca-certs-1.74-1.osg34.el7.noarch.rpm' | rpm2cpio | cpio -uimd
 ```
 -- TEMP TIMEWARP--
+## Testing your instance
+```
+$ git clone https://github.com/scitokens/docker-xrootd-scitokens.git
+```
+cd into the directory and run
+```
+ ~/docker-xrootd-scitokens$ docker build .
+```
+To build a new docker in the directory 
+Running a quick 
+```
+$ docker images
+```
+to see a row with:
+```
+REPOSITORY    TAG     IMAGE ID    CREATED     SIZE
+<none>        <none>  rndmid      x sec ago   446MB
+```
+And now we run the docker image:
+```
+~/docker-xrootd-scitokens$ docker run -p 443:1094 --volume /etc/grid-security/:/etc/grid-security --volume /tmp/exportfiles:/export RNDMID_HERE 
+```
+Now that will hang your terminal, so we should open up a new terminal...
+### In a new terminal...
+In your ~USER directory, run
+```
+$ . venv/bin/activate
+$ cd /tmp/exportfiles
+$ mkdir demo
+$ cd demo
+$ chmod 777 .
+$ ls -la // <- for sanity
+$ cd ~USER
+$ python test_http.py "https://FQDN/demo/nameofyourfile.txt" "write:/" "read:/"
+```
+Now it should send! Your "Got Token" is your encoded SciToken! Run this to make sure you did it correctly:
+```
+$ ls -lh /tmp/exportfiles/demo/
+```
+And it should give you something like:
+```
+total 51M
+-rw-r--r-- 1 999 998 51M Sep 27 14:54 blah
+```
+And if you look at your other terminal with the running docker image, you should see the log of an XrootdBridge with your hostname. Congrats!
 
+## Leftover...
 To use, start a docker container with the following command:
 
 ```
